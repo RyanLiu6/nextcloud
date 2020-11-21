@@ -35,6 +35,9 @@ services:
     restart: always
     labels:
       - "traefik.enable=true"
+      - "traefik.frontend.redirect.permanent=true"
+      - "traefik.frontend.redirect.regex=https://(.*)/.well-known/(card|cal)dav"
+      - "traefik.frontend.redirect.replacement=https://$$1/remote.php/dav/"
       - "traefik.docker.network=proxy"
       - "traefik.http.routers.nextcloud.entrypoints=http"
       - "traefik.http.routers.nextcloud.rule=Host(`${STORAGE_DOMAIN}`)"
