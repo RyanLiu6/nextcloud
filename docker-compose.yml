@@ -32,17 +32,19 @@ services:
       - ./nextcloud.env
     labels:
       - "traefik.enable=true"
-      - "traefik.frontend.redirect.permanent=true"
-      - "traefik.frontend.redirect.regex=https://(.*)/.well-known/(card|cal)dav"
-      - "traefik.frontend.redirect.replacement=https://$$1/remote.php/dav/"
-      - "traefik.docker.network=proxy"
-      - "traefik.http.routers.nextcloud.entrypoints=http"
+      - "traefik.http.services.nextcloud.loadbalancer.server.port=80"
+      - "traefik.http.middlewares.nextcloud-https.redirectscheme.scheme=https"
+      - "traefik.http.routers.nextcloud-http.entrypoints=web"
+      - "traefik.http.routers.nextcloud-http.rule=Host(`${STORAGE_DOMAIN}`)"
+      - "traefik.http.routers.nextcloud-http.middlewares=nextcloud-https@docker"
+      - "traefik.http.routers.nextcloud.entrypoints=web-secure"
+      # traefik entrypoint and TLS
       - "traefik.http.routers.nextcloud.rule=Host(`${STORAGE_DOMAIN}`)"
-      - "traefik.http.routers.nextcloud.middlewares=nextcloud-https-redirect"
-      - "traefik.http.middlewares.nextcloud-https-redirect.redirectscheme.scheme=https"
-      - "traefik.http.routers.nextcloud-secure.entrypoints=https"
-      - "traefik.http.routers.nextcloud-secure.rule=Host(`${STORAGE_DOMAIN}`)"
-      - "traefik.http.routers.nextcloud-secure.tls=true"
-      - "traefik.http.routers.nextcloud-secure.tls.certresolver=http"
-      - "traefik.http.routers.nextcloud-secure.service=nextcloud"
-      - "traefik.http.services.nextcloud.loadbalancer.server.port=9090"
+      - "traefik.http.routers.nextcloud.tls=true"
+      - "traefik.http.routers.nextcloud.tls.certresolver=letsencryptresolver"
+      # define traefik middlewares
+      - "traefik.http.routers.nextcloud.middlewares=nextcloud-dav,secHeaders2@file"
+
+      # traefik middleware nextcloud-dav replaces .well-known paths for caldav and carddav with proper nextcloud path
+      - "traefik.http.middlewares.nextcloud-dav.replacepathregex.regex=^/.well-known/ca(l|rd)dav"
+      - "traefik.http.middlewares.nextcloud-dav.replacepathregex.replacement=/remote.php/dav/"
