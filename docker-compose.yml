@@ -21,6 +21,7 @@ services:
   app:
     image: nextcloud
     container_name: nextcloud_app
+    hostname: ${STORAGE_DOMAIN}
     ports:
       - 9090:80
     links:
@@ -28,8 +29,10 @@ services:
     volumes:
       - nextcloud:/var/www/html
     restart: always
-    env_file:
-      - ./nextcloud.env
+    environment:
+      - OVERWRITEHOST=${STORAGE_DOMAIN}
+      - OVERWRITEPROTOCOL=https
+      - TRUSTED_PROXIES=traefik
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.nextcloud.loadbalancer.server.port=80"
