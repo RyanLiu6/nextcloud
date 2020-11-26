@@ -21,32 +21,10 @@ services:
   app:
     image: nextcloud
     container_name: nextcloud_app
-    hostname: ${STORAGE_DOMAIN}
     ports:
-      - 9090:80
+      - 8080:80
     links:
       - db
     volumes:
       - nextcloud:/var/www/html
     restart: always
-    environment:
-      - OVERWRITEHOST=${STORAGE_DOMAIN}
-      - OVERWRITEPROTOCOL=https
-      - TRUSTED_PROXIES=traefik
-    labels:
-      - "traefik.enable=true"
-      - "traefik.docker.network=proxy"
-      - "traefik.http.routers.storage.entrypoints=http"
-      - "traefik.http.routers.storage.rule=Host(`${STORAGE_DOMAIN}`)"
-      - "traefik.http.routers.storage.middlewares=storage-https-redirect"
-      - "traefik.http.middlewares.storage-https-redirect.redirectscheme.scheme=https"
-      - "traefik.http.routers.storage-secure.entrypoints=https"
-      - "traefik.http.routers.storage-secure.rule=Host(`${STORAGE_DOMAIN}`)"
-      - "traefik.http.routers.storage-secure.tls=true"
-      - "traefik.http.routers.storage-secure.tls.certresolver=http"
-      - "traefik.http.routers.storage-secure.service=storage"
-      - "traefik.http.services.storage.loadbalancer.server.port=9090"
-
-      - "traefik.frontend.redirect.permanent=true"
-      - "traefik.frontend.redirect.regex: https://(.*)/.well-known/(card|cal)dav"
-      - "traefik.frontend.redirect.replacement: https://$$1/remote.php/dav/"
