@@ -18,8 +18,6 @@ services:
     restart: always
     volumes:
       - db:/var/lib/mysql
-    environment:
-      - MYSQL_ROOT_PASSWORD=${ROOT_PASS}
     env_file:
       - db.env
 
