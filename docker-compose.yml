@@ -1,19 +1,12 @@
 version: "3"
 
 volumes:
-  db:
   nextcloud:
-  certs:
-  vhost.d:
-  html:
-
-networks:
-  proxy-tier:
+  db:
 
 services:
   db:
     image: mariadb
-    # container_name: db
     command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
     restart: always
     volumes:
@@ -22,61 +15,21 @@ services:
       - db.env
 
   app:
-    image: nextcloud:fpm-alpine
-    # container_name: nextcloud
-    restart: always
+    image: nextcloud:fpm
+    links:
+      - db
     volumes:
       - nextcloud:/var/www/html
-    environment:
-      - MYSQL_HOST=db
-    env_file:
-      - db.env
-    depends_on:
-      - db
+    restart: always
 
   web:
-    build: ./web
-    # container_name: nginx
-    restart: always
-    volumes:
-      - nextcloud:/var/www/html:ro
-    environment:
-      - VIRTUAL_HOST=${CLOUD_DOMAIN}
-      - LETSENCRYPT_HOST=${CLOUD_DOMAIN}
-      - LETSENCRYPT_EMAIL=${ENCRYPT_EMAIL}
-    depends_on:
-      - app
-    networks:
-      - proxy-tier
-      - default
-
-  proxy:
-    build: ./proxy
-    # container_name: proxy
-    restart: always
+    image: nginx
     ports:
-      - 80:80
-      - 443:443
-    labels:
-      com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy: "true"
+      - 8080:80
+    links:
+      - app
     volumes:
-      - certs:/etc/nginx/certs:ro
-      - vhost.d:/etc/nginx/vhost.d
-      - html:/usr/share/nginx/html
-      - /var/run/docker.sock:/tmp/docker.sock:ro
-    networks:
-      - proxy-tier
-
-  letsencrypt-companion:
-    image: jrcs/letsencrypt-nginx-proxy-companion
-    # container_name: letsencrypt
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    volumes_from:
+      - app
     restart: always
-    volumes:
-      - certs:/etc/nginx/certs
-      - vhost.d:/etc/nginx/vhost.d
-      - html:/usr/share/nginx/html
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-    networks:
-      - proxy-tier
-    depends_on:
-      - proxy
