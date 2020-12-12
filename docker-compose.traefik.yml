@@ -17,6 +17,22 @@ services:
     env_file:
       - db.env
 
+  redis:
+    image: redis:alpine
+    container_name: nextcloud_redis
+    restart: always
+
+  cron:
+    image: nextcloud:apache
+    container_name: nextcloud_cron
+    restart: always
+    volumes:
+      - nextcloud:/var/www/html
+    entrypoint: /cron.sh
+    depends_on:
+      - db
+      - redis
+
   app:
     image: nextcloud
     container_name: nextcloud
@@ -25,13 +41,17 @@ services:
       - proxy
     ports:
       - 10080:80
-    links:
+    depends_on:
       - db
+      - redis
     volumes:
       - nextcloud:/var/www/html
     environment:
+      - VIRTUAL_HOST=${CLOUD_DOMAIN}
       - OVERWRITEHOST=${CLOUD_DOMAIN}
       - NEXTCLOUD_HOSTNAME=${CLOUD_DOMAIN}
+      - MYSQL_HOST=nextcloud_db
+      - REDIS_HOST=nextcloud_redis
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=proxy"
