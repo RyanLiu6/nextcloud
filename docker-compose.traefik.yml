@@ -8,8 +8,10 @@ services:
   db:
     image: mariadb
     container_name: nextcloud_db
-    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
     restart: always
+    networks:
+      - proxy
+    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
     volumes:
       - db:/var/lib/mysql
     env_file:
@@ -18,13 +20,15 @@ services:
   app:
     image: nextcloud
     container_name: nextcloud
+    restart: always
+    networks:
+      - proxy
     ports:
       - 10080:80
     links:
       - db
     volumes:
       - nextcloud:/var/www/html
-    restart: always
     environment:
       - OVERWRITEHOST=${CLOUD_DOMAIN}
     labels:
