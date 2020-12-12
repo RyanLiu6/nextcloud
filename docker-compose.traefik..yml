@@ -38,3 +38,7 @@ services:
       - "traefik.http.routers.nextcloud-secure.tls.certresolver=http"
       - "traefik.http.routers.nextcloud-secure.service=nextcloud"
       - "traefik.http.services.nextcloud.loadbalancer.server.port=9000"
+
+networks:
+  proxy:
+    external: true
