@@ -1,11 +1,24 @@
 # nextcloud
 
-.env should contain:
-1. CLOUD_DOMAIN
-2. ENCRYPT_EMAIL
+# Setup
+1. Clone the repo
+2. Create `.env` with:
 
-db.env should contain:
-1. MYSQL_PASSWORD
-2. MYSQL_DATABASE
-3. MYSQL_USER
-4. MYSQL_ROOT_PASSWORD
+```
+CLOUD_DOMAIN=<nextcloud domain>
+```
+
+3. Create `db.env` with:
+
+```
+MYSQL_PASSWORD=<PASSWORD>
+MYSQL_DATABASE=nextcloud
+MYSQL_USER=nextcloud
+MYSQL_ROOT_PASSWORD=<PASSWORD>
+```
+
+4. Run it!
+
+```
+docker-compose -f docker-compose.traefik.yml up -d
+```
