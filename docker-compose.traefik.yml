@@ -25,6 +25,8 @@ services:
     volumes:
       - nextcloud:/var/www/html
     restart: always
+    environment:
+      - OVERWRITEHOST=${CLOUD_DOMAIN}
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=proxy"
