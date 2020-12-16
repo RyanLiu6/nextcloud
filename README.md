@@ -6,6 +6,7 @@
 
 ```
 CLOUD_DOMAIN=<nextcloud domain>
+NEXTCLOUD_MOUNT=<absolute path>
 ```
 
 3. Create `db.env` with:
@@ -15,7 +16,6 @@ MYSQL_PASSWORD=<PASSWORD>
 MYSQL_DATABASE=nextcloud
 MYSQL_USER=nextcloud
 MYSQL_ROOT_PASSWORD=<PASSWORD>
-NEXTCLOUD_MOUNT=<absolute path>
 ```
 
 4. Run it!
