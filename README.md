@@ -6,7 +6,6 @@
 
 ```
 CLOUD_DOMAIN=<nextcloud domain>
-NEXTCLOUD_MOUNT=<absolute path>
 ```
 
 3. Create `db.env` with:
@@ -25,7 +24,7 @@ docker-compose -f docker-compose.traefik.yml up -d
 ```
 
 # Backups
-1. Nextcloud data is being mounted at `NEXTCLOUD_MOUNT`
+1. Nextcloud data is mounted at `$HOME/Data/nextcloud`
 
 2. To back up MySQL
 
