@@ -17,21 +17,21 @@ services:
     env_file:
       - db.env
 
-  redis:
-    image: redis:alpine
-    container_name: nextcloud_redis
-    restart: always
+  # redis:
+  #   image: redis:alpine
+  #   container_name: nextcloud_redis
+  #   restart: always
 
-  cron:
-    image: nextcloud:apache
-    container_name: nextcloud_cron
-    restart: always
-    volumes:
-      - nextcloud:/var/www/html
-    entrypoint: /cron.sh
-    depends_on:
-      - db
-      - redis
+  # cron:
+  #   image: nextcloud:apache
+  #   container_name: nextcloud_cron
+  #   restart: always
+  #   volumes:
+  #     - nextcloud:/var/www/html
+  #   entrypoint: /cron.sh
+  #   depends_on:
+  #     - db
+  #     - redis
 
   app:
     image: nextcloud
@@ -43,7 +43,7 @@ services:
       - 10080:80
     depends_on:
       - db
-      - redis
+      # - redis
     volumes:
       - nextcloud:/var/www/html
       - ./apache2/000-default.conf:/etc/apache2/sites-available/000-default.conf
@@ -54,42 +54,41 @@ services:
       - OVERWRITEPROTOCOL=https
       - TRUSTED_PROXIES=traefik
       - MYSQL_HOST=nextcloud_db
-      - REDIS_HOST=nextcloud_redis
+      # - REDIS_HOST=nextcloud_redis
     labels:
-      - "traefik.enable=true"
-      - "traefik.docker.network=proxy"
-      - "traefik.http.routers.nextcloud.middlewares=nextcloud,nextcloud_redirect"
-      - "traefik.http.routers.nextcloud.tls=true"
-      - "traefik.http.routers.nextcloud.entrypoints=http"
-      - "traefik.http.routers.nextcloud.tls.certresolver=http"
-      - "traefik.http.routers.nextcloud.rule=Host(`${CLOUD_DOMAIN}`)"
-      - "traefik.http.middlewares.nextcloud.headers.customFrameOptionsValue=ALLOW-FROM ${CLOUD_DOMAIN}"
-      - "traefik.http.middlewares.nextcloud.headers.contentSecurityPolicy=frame-ancestors 'self' ${CLOUD_DOMAIN} *.${CLOUD_DOMAIN}"
-      - "traefik.http.middlewares.nextcloud.headers.stsSeconds=155520011"
-      - "traefik.http.middlewares.nextcloud.headers.stsIncludeSubdomains=true"
-      - "traefik.http.middlewares.nextcloud.headers.stsPreload=true"
-      - "traefik.http.middlewares.nextcloud_redirect.redirectregex.regex=/.well-known/(card|cal)dav"
-      - "traefik.http.middlewares.nextcloud_redirect.redirectregex.replacement=/remote.php/dav/"
-      - "traefik.http.services.nextcloud.loadbalancer.server.port=80"
-
       # - "traefik.enable=true"
       # - "traefik.docker.network=proxy"
+      # - "traefik.http.routers.nextcloud.middlewares=nextcloud,nextcloud_redirect"
+      # - "traefik.http.routers.nextcloud.tls=true"
       # - "traefik.http.routers.nextcloud.entrypoints=http"
+      # - "traefik.http.routers.nextcloud.tls.certresolver=http"
       # - "traefik.http.routers.nextcloud.rule=Host(`${CLOUD_DOMAIN}`)"
-      # - "traefik.http.routers.nextcloud.middlewares=nextcloud-https-redirect"
-      # - "traefik.http.middlewares.nextcloud-https-redirect.redirectscheme.scheme=https"
-      # - "traefik.http.routers.nextcloud-secure.entrypoints=https"
-      # - "traefik.http.routers.nextcloud-secure.rule=Host(`${CLOUD_DOMAIN}`)"
-      # - "traefik.http.routers.nextcloud-secure.tls=true"
-      # - "traefik.http.routers.nextcloud-secure.tls.certresolver=http"
-      # - "traefik.http.routers.nextcloud-secure.service=nextcloud"
+      # - "traefik.http.middlewares.nextcloud.headers.customFrameOptionsValue=ALLOW-FROM ${CLOUD_DOMAIN}"
+      # - "traefik.http.middlewares.nextcloud.headers.contentSecurityPolicy=frame-ancestors 'self' ${CLOUD_DOMAIN} *.${CLOUD_DOMAIN}"
+      # - "traefik.http.middlewares.nextcloud.headers.stsSeconds=155520011"
+      # - "traefik.http.middlewares.nextcloud.headers.stsIncludeSubdomains=true"
+      # - "traefik.http.middlewares.nextcloud.headers.stsPreload=true"
+      # - "traefik.http.middlewares.nextcloud_redirect.redirectregex.regex=/.well-known/(card|cal)dav"
+      # - "traefik.http.middlewares.nextcloud_redirect.redirectregex.replacement=/remote.php/dav/"
       # - "traefik.http.services.nextcloud.loadbalancer.server.port=80"
+
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
+      - "traefik.http.routers.nextcloud.entrypoints=http"
+      - "traefik.http.routers.nextcloud.rule=Host(`${CLOUD_DOMAIN}`)"
+      - "traefik.http.routers.nextcloud.middlewares=nextcloud-https-redirect"
+      - "traefik.http.middlewares.nextcloud-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.nextcloud-secure.entrypoints=https"
+      - "traefik.http.routers.nextcloud-secure.rule=Host(`${CLOUD_DOMAIN}`)"
+      - "traefik.http.routers.nextcloud-secure.tls=true"
+      - "traefik.http.routers.nextcloud-secure.tls.certresolver=http"
+      - "traefik.http.routers.nextcloud-secure.service=nextcloud"
+      - "traefik.http.services.nextcloud.loadbalancer.server.port=80"
 
       # # Proxy from documentation
       # - "traefik.http.middlewares.nextcloud-https-redirect.redirectregex.permanent=true"
       # - "traefik.http.middlewares.nextcloud-https-redirect.redirectregex.regex: https://(.*)/.well-known/(card|cal)dav"
       # - "traefik.http.middlewares.nextcloud-https-redirect.redirectregex.replacement: https://$$1/remote.php/dav/"
-
 
 
 networks:
