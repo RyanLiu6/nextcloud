@@ -20,7 +20,7 @@ MYSQL_ROOT_PASSWORD=<PASSWORD>
 4. Run it!
 
 ```
-docker-compose -f docker-compose.traefik.yml up -d
+docker-compose up -d
 ```
 
 # Backups
