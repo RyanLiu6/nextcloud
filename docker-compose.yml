@@ -44,7 +44,7 @@ services:
       - db
       # - redis
     volumes:
-      - ${NEXTCLOUD_MOUNT}:/var/www/html
+      - ${HOME}/Data/nextcloud:/var/www/html
       - ./apache2/000-default.conf:/etc/apache2/sites-available/000-default.conf
     environment:
       - VIRTUAL_HOST=${CLOUD_DOMAIN}
