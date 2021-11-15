@@ -56,8 +56,8 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=proxy"
-      - "traefik.http.routers.nextcloud.entrypoints=http"
-      - "traefik.http.routers.nextcloud.rule=Host(`${CLOUD_DOMAIN}`)"
+      # - "traefik.http.routers.nextcloud.entrypoints=http"
+      # - "traefik.http.routers.nextcloud.rule=Host(`${CLOUD_DOMAIN}`)"
       - "traefik.http.routers.nextcloud.middlewares=headers,redirectregex,https-redirect,"
       - "traefik.http.routers.nextcloud-secure.entrypoints=https"
       - "traefik.http.routers.nextcloud-secure.rule=Host(`${CLOUD_DOMAIN}`)"
